@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,7 +46,15 @@ INSTALLED_APPS = [
     # third party apps
     'rest_framework',
     'rest_framework.authtoken',
+    'allauth',
+    'allauth.account',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+    
 ]
+
+
+BASE_URL = 'http://localhost:8000'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -133,7 +142,30 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated'
-    ]
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES':[
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication'
+    ],
 }
 
+REST_AUTH = { 
+    'USE_JWT': True,
+    'JWT_AUTH_COOKIE': 'my-app-auth',
+    'JWT_AUTH_REFRESH_COOKIE': 'my-refresh-token',
+}
 
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = [
+    'allauth.account.auth_backends.AuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+LOGIN_URL = f'{BASE_URL}/api-auth/login'
+LOGIN_REDIRECT_URL = f'{BASE_URL}/api/v1'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
